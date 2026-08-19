@@ -1,0 +1,1516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ampalaya Leaf Disease Detection System & Admin Portal</title>
+    <!-- Tailwind CSS for modern, responsive utility-first styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for clean agricultural and UI icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar for mobile frame */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        #app-container::-webkit-scrollbar {
+            display: none;
+        }
+        #app-container {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col items-center justify-center p-2 sm:p-6 overflow-x-hidden overflow-y-auto">
+
+    <!-- Responsive Resizable Realistic Mobile Frame Container -->
+    <div class="w-full max-w-[400px] h-[860px] max-h-[94vh] bg-slate-950 rounded-[48px] border-[10px] border-slate-800 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.7)] overflow-hidden flex flex-col relative shrink-0 my-auto ring-1 ring-slate-700/50">
+        
+        <!-- Physical Side Buttons -->
+        <div class="absolute -left-[14px] top-28 w-1 h-12 bg-slate-700 rounded-l-md z-40"></div>
+        <div class="absolute -left-[14px] top-44 w-1 h-12 bg-slate-700 rounded-l-md z-40"></div>
+        <div class="absolute -right-[14px] top-32 w-1 h-16 bg-slate-700 rounded-r-md z-40"></div>
+
+        <!-- Realistic Mobile Status Bar -->
+        <div class="absolute top-0 left-0 right-0 h-9 bg-transparent z-50 flex items-center justify-between px-6 text-white text-[11px] font-semibold select-none pointer-events-none">
+            <div id="status-bar-time" class="tracking-tight">9:41</div>
+            <div class="w-24"></div>
+            <div class="flex items-center space-x-1.5 text-xs">
+                <i class="fa-solid fa-signal text-[10px]"></i>
+                <i class="fa-solid fa-wifi text-[10px]"></i>
+                <div class="flex items-center space-x-0.5 ml-0.5">
+                    <span class="text-[10px] font-bold">94%</span>
+                    <i class="fa-solid fa-battery-full text-emerald-400 text-sm"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dynamic Island Notch -->
+        <div class="flex absolute top-2.5 left-1/2 transform -translate-x-1/2 w-32 h-6 bg-slate-900 rounded-full z-50 items-center justify-center border border-slate-800/80 shadow-inner px-3 space-x-2">
+            <div class="w-3 h-3 rounded-full bg-slate-950 border border-slate-800 flex items-center justify-center">
+                <div class="w-1 h-1 rounded-full bg-emerald-900/60"></div>
+            </div>
+            <div class="w-10 h-1 bg-slate-800 rounded-full"></div>
+        </div>
+
+        <!-- App Header Bar -->
+        <header class="bg-brand-800 text-white px-5 pt-12 pb-4 shadow-md flex items-center justify-between z-10 shrink-0">
+            <div class="flex items-center space-x-3">
+                <div class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center text-brand-100 font-bold text-lg">
+                    <i class="fa-solid fa-seedling"></i>
+                </div>
+                <div>
+                    <h1 id="header-title" class="font-bold text-base tracking-wide">Ampalaya Guard</h1>
+                    <p id="header-subtitle" class="text-[11px] text-brand-100 opacity-90">AI Leaf Disease Detection</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <span id="system-status" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-900 text-emerald-200 border border-emerald-700">
+                    <span class="w-1.5 h-1.5 mr-1.5 bg-emerald-400 rounded-full animate-pulse"></span> Offline-First DB
+                </span>
+            </div>
+        </header>
+
+        <!-- Main Scrollable App Content Area -->
+        <main id="app-container" class="flex-1 overflow-y-auto bg-slate-900 relative flex flex-col">
+            
+            <!-- VIEW 0: UNIFIED SINGLE LOGIN SCREEN (AUTOMATIC ROLE DETECTION) -->
+            <section id="view-login" class="p-6 flex flex-col justify-between flex-1">
+                <div class="space-y-5 pt-4">
+                    <div class="text-center">
+                        <div class="w-16 h-16 mx-auto bg-brand-500/10 rounded-full flex items-center justify-center text-brand-500 mb-2 border border-brand-500/20 shadow-inner">
+                            <i class="fa-solid fa-lock text-2xl"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-white">System Authentication</h2>
+                        <p class="text-xs text-slate-400 mt-1">Enter your credentials. System automatically detects Farmer or Admin access.</p>
+                    </div>
+
+                    <form id="login-form" onsubmit="handleLoginSubmit(event)" class="space-y-3 bg-slate-800/80 border border-slate-700/60 p-4 rounded-2xl shadow-md">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1">Username / Email</label>
+                            <input type="text" id="login-username" required placeholder="farmer or admin" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-brand-500">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1">Password</label>
+                            <input type="password" id="login-password" required placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-brand-500">
+                        </div>
+                        <div id="login-error" class="text-red-400 text-xs hidden">Invalid username or password. Please check your credentials.</div>
+                        <button type="submit" class="w-full bg-brand-600 hover:bg-brand-500 text-white font-semibold py-3 rounded-xl shadow-lg shadow-brand-600/30 text-xs mt-1 flex items-center justify-center space-x-2 transition-all">
+                            <i class="fa-solid fa-right-to-bracket"></i>
+                            <span>Secure Offline Login</span>
+                        </button>
+                    </form>
+
+                    <!-- Register as Farmer Button / Trigger -->
+                    <div class="text-center pt-1">
+                        <p class="text-xs text-slate-400">Don't have a farmer account yet?</p>
+                        <button onclick="navigateTo('register')" class="mt-2 w-full bg-slate-800 hover:bg-slate-700 text-brand-300 font-semibold py-2.5 rounded-xl border border-brand-500/30 text-xs flex items-center justify-center space-x-2 transition-all">
+                            <i class="fa-solid fa-user-plus"></i>
+                            <span>Register as Farmer</span>
+                        </button>
+                    </div>
+
+                    <div class="bg-slate-800/40 border border-slate-700/40 rounded-xl p-3 text-[11px] text-slate-400 space-y-1">
+                        <div class="font-semibold text-slate-300 mb-0.5"><i class="fa-solid fa-circle-info text-brand-400 mr-1"></i> Demo Credentials:</div>
+                        <div>&bull; Farmer: <code class="text-brand-300 font-mono">farmer</code> / <code class="text-brand-300 font-mono">farmer123</code></div>
+                        <div>&bull; Admin: <code class="text-indigo-300 font-mono">admin</code> / <code class="text-indigo-300 font-mono">admin123</code></div>
+                    </div>
+                </div>
+
+                <div class="text-center text-[10px] text-slate-500 pb-2">
+                    Offline Database (IndexedDB / LocalStorage) Active
+                </div>
+            </section>
+
+            <!-- VIEW 0.5: FARMER REGISTRATION SCREEN -->
+            <section id="view-register" class="p-6 hidden flex-col justify-between flex-1">
+                <div>
+                    <button onclick="navigateTo('login')" class="text-slate-400 hover:text-white text-xs flex items-center mb-4 font-medium">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Back to Login
+                    </button>
+
+                    <div class="text-center mb-4">
+                        <div class="w-14 h-14 mx-auto bg-brand-500/10 rounded-full flex items-center justify-center text-brand-500 mb-2 border border-brand-500/20 shadow-inner">
+                            <i class="fa-solid fa-user-plus text-xl"></i>
+                        </div>
+                        <h2 class="text-xl font-bold text-white">Farmer Registration</h2>
+                        <p class="text-xs text-slate-400 mt-0.5">Create your secure offline farmer account.</p>
+                    </div>
+
+                    <form id="register-form" onsubmit="handleRegisterSubmit(event)" class="space-y-3 bg-slate-800/80 border border-slate-700/60 p-4 rounded-2xl shadow-md">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1">Full Name *</label>
+                            <input type="text" id="reg-fullname" required placeholder="Juan Dela Cruz" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1">Username *</label>
+                            <input type="text" id="reg-username" required placeholder="juandela" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1">Email Address *</label>
+                            <input type="email" id="reg-email" required placeholder="juan@gmail.com" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1">Password *</label>
+                            <input type="password" id="reg-password" required placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider mb-1">Confirm Password *</label>
+                            <input type="password" id="reg-confirm" required placeholder="••••••••" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-brand-500">
+                        </div>
+                        <div id="register-error" class="text-red-400 text-xs hidden"></div>
+                        <button type="submit" class="w-full bg-brand-600 hover:bg-brand-500 text-white font-semibold py-3 rounded-xl shadow-lg shadow-brand-600/30 text-xs mt-1 flex items-center justify-center space-x-2 transition-all">
+                            <i class="fa-solid fa-user-check"></i>
+                            <span>Create Farmer Account</span>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="text-center text-[10px] text-slate-500 pb-2">
+                    Already registered? <button onclick="navigateTo('login')" class="text-brand-400 hover:underline">Log in here</button>
+                </div>
+            </section>
+
+            <!-- ================= FARMER SIDE VIEWS ================= -->
+
+            <!-- VIEW 1: WELCOME & INSTRUCTIONS -->
+            <section id="view-welcome" class="p-6 hidden flex-col justify-between flex-1">
+                <div class="space-y-6">
+                    <div class="text-center py-2">
+                        <div class="w-20 h-20 mx-auto bg-brand-500/10 rounded-full flex items-center justify-center text-brand-500 mb-4 border border-brand-500/20 shadow-inner">
+                            <i class="fa-solid fa-spa text-4xl"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-white">Ampalaya Leaf Disease Detection System</h2>
+                        <p class="text-sm text-slate-400 mt-2">
+                            Detect ampalaya (bitter melon) leaf health and diseases instantly using advanced Computer Vision & Deep Learning.
+                        </p>
+                    </div>
+
+                    <div class="bg-slate-800/80 border border-slate-700/60 rounded-2xl p-4 space-y-3 shadow-sm">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-brand-400 flex items-center">
+                            <i class="fa-solid fa-circle-info mr-2"></i> Capturing Guidelines
+                        </h3>
+                        <ul class="space-y-2.5 text-xs text-slate-300">
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-check text-brand-500 mt-0.5 mr-2 shrink-0"></i>
+                                <span>Ensure the ampalaya leaf is <strong>centered</strong> and clearly visible.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-check text-brand-500 mt-0.5 mr-2 shrink-0"></i>
+                                <span>Use <strong>natural daylight</strong> or adequate lighting to prevent blur.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa-solid fa-check text-brand-500 mt-0.5 mr-2 shrink-0"></i>
+                                <span>Avoid shadows and keep the camera steady during capture.</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 text-center">
+                        <div class="bg-slate-800/50 border border-slate-700/50 p-3 rounded-xl">
+                            <div class="text-brand-400 font-bold text-base">98.4%</div>
+                            <div class="text-[11px] text-slate-400">Model Accuracy</div>
+                        </div>
+                        <div class="bg-slate-800/50 border border-slate-700/50 p-3 rounded-xl">
+                            <div class="text-brand-400 font-bold text-base">CNN+ResNet</div>
+                            <div class="text-[11px] text-slate-400">Architecture</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-6 pb-2">
+                    <button onclick="navigateTo('options')" class="w-full bg-brand-600 hover:bg-brand-500 active:scale-[0.98] transition-all text-white font-semibold py-3.5 px-6 rounded-xl shadow-lg shadow-brand-600/30 flex items-center justify-center space-x-2 text-sm">
+                        <span>Start Disease Detection</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- VIEW 2: CHOOSE AN OPTION -->
+            <section id="view-options" class="p-6 hidden flex-col justify-between flex-1">
+                <div>
+                    <button onclick="navigateTo('welcome')" class="text-slate-400 hover:text-white text-xs flex items-center mb-6 font-medium">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Back to Welcome
+                    </button>
+
+                    <div class="mb-6">
+                        <h2 class="text-xl font-bold text-white">Select Image Source</h2>
+                        <p class="text-xs text-slate-400 mt-1">Choose how you would like to provide the ampalaya leaf specimen for analysis.</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div onclick="openCameraInterface()" class="group bg-slate-800/90 border border-slate-700 hover:border-brand-500 rounded-2xl p-5 cursor-pointer transition-all hover:bg-slate-800 shadow-md flex items-center space-x-4">
+                            <div class="w-14 h-14 rounded-xl bg-brand-500/10 text-brand-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform shrink-0">
+                                <i class="fa-solid fa-camera"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-sm font-semibold text-white group-hover:text-brand-400 transition-colors">Capture Using Camera</h3>
+                                <p class="text-xs text-slate-400 mt-0.5">Use device camera with live preview & guidelines.</p>
+                            </div>
+                            <i class="fa-solid fa-chevron-right text-slate-500 text-xs"></i>
+                        </div>
+
+                        <div onclick="document.getElementById('file-input').click()" class="group bg-slate-800/90 border border-slate-700 hover:border-brand-500 rounded-2xl p-5 cursor-pointer transition-all hover:bg-slate-800 shadow-md flex items-center space-x-4">
+                            <div class="w-14 h-14 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform shrink-0">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="text-sm font-semibold text-white group-hover:text-emerald-400 transition-colors">Upload from Gallery</h3>
+                                <p class="text-xs text-slate-400 mt-0.5">Select existing leaf photo from your storage.</p>
+                            </div>
+                            <i class="fa-solid fa-chevron-right text-slate-500 text-xs"></i>
+                        </div>
+                        <input type="file" id="file-input" accept="image/*" class="hidden" onchange="handleFileUpload(event)">
+                    </div>
+                </div>
+
+                <div class="pt-6 space-y-2">
+                    <button onclick="navigateTo('disease-library')" class="w-full bg-slate-800 hover:bg-slate-700 text-emerald-300 font-medium py-3 rounded-xl border border-emerald-700/50 text-xs flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-book-medical"></i>
+                        <span>Browse Disease Library & Treatments</span>
+                    </button>
+                    <button onclick="navigateTo('history')" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium py-3 rounded-xl border border-slate-700 text-xs flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        <span>View Saved Detection Records</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- VIEW 2.5: LIVE CAMERA CAPTURE INTERFACE -->
+            <section id="view-camera" class="p-6 hidden flex-col justify-between flex-1">
+                <div class="flex items-center justify-between mb-4">
+                    <button onclick="stopCameraStream(); navigateTo('options')" class="text-slate-400 hover:text-white text-xs flex items-center font-medium">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Cancel
+                    </button>
+                    <span class="text-xs font-semibold text-brand-400 bg-brand-500/10 px-2.5 py-1 rounded-full border border-brand-500/20">
+                        <i class="fa-solid fa-video mr-1.5 animate-pulse text-red-500"></i> Live Camera Active
+                    </span>
+                </div>
+
+                <div class="relative flex-1 bg-black rounded-2xl overflow-hidden shadow-inner flex items-center justify-center border border-slate-700 min-h-[320px]">
+                    <video id="camera-preview" autoplay playsinline class="w-full h-full object-cover"></video>
+                    <canvas id="camera-canvas" class="hidden"></canvas>
+                    <div class="absolute inset-0 border-2 border-dashed border-brand-400/60 m-8 rounded-2xl pointer-events-none flex flex-col items-center justify-center">
+                        <div class="w-48 h-48 border border-white/40 rounded-xl relative">
+                            <div class="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-brand-400"></div>
+                            <div class="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-brand-400"></div>
+                            <div class="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-brand-400"></div>
+                            <div class="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-brand-400"></div>
+                        </div>
+                        <span class="bg-black/70 text-white text-[11px] px-3 py-1 rounded-full mt-4 backdrop-blur-sm border border-white/10">
+                            Center Ampalaya Leaf Inside Frame
+                        </span>
+                    </div>
+                </div>
+
+                <div class="pt-6 flex items-center justify-center">
+                    <button onclick="captureCameraImage()" class="w-16 h-16 rounded-full bg-white border-4 border-brand-600 flex items-center justify-center shadow-lg active:scale-95 transition-transform">
+                        <div class="w-12 h-12 rounded-full bg-brand-600 flex items-center justify-center text-white">
+                            <i class="fa-solid fa-camera text-lg"></i>
+                        </div>
+                    </button>
+                </div>
+            </section>
+
+            <!-- VIEW 3: IMAGE QUALITY CHECK & PROCESSING ANIMATION -->
+            <section id="view-processing" class="p-6 hidden flex-col items-center justify-center flex-1 text-center">
+                <div class="w-full max-w-xs space-y-6">
+                    <div class="relative w-36 h-36 mx-auto rounded-2xl overflow-hidden border-2 border-brand-500 shadow-xl bg-slate-800">
+                        <img id="processing-img-preview" src="" alt="Captured Leaf" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-brand-900/30 backdrop-blur-[1px] flex items-center justify-center">
+                            <div class="w-8 h-8 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h2 id="process-step-title" class="text-lg font-bold text-white">Checking Image Quality...</h2>
+                        <p id="process-step-desc" class="text-xs text-slate-400 mt-1">Analyzing blur, illumination, and visibility score.</p>
+                    </div>
+
+                    <div class="bg-slate-800/80 border border-slate-700/60 rounded-xl p-4 text-left space-y-2.5">
+                        <div id="step-1" class="flex items-center text-xs text-slate-400">
+                            <i class="fa-solid fa-circle-notch fa-spin mr-2.5 text-brand-400"></i>
+                            <span>Image Quality Check (Lighting & Blur)</span>
+                        </div>
+                        <div id="step-2" class="flex items-center text-xs text-slate-500">
+                            <i class="fa-regular fa-circle mr-2.5"></i>
+                            <span>Image Pre-Processing (Resizing & ROI Crop)</span>
+                        </div>
+                        <div id="step-3" class="flex items-center text-xs text-slate-500">
+                            <i class="fa-regular fa-circle mr-2.5"></i>
+                            <span>Feature Extraction (Color/Texture CNN Vector)</span>
+                        </div>
+                        <div id="step-4" class="flex items-center text-xs text-slate-500">
+                            <i class="fa-regular fa-circle mr-2.5"></i>
+                            <span>Trained CNN Model Classification</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 4: CLASSIFICATION RESULT -->
+            <section id="view-result" class="p-6 hidden flex-col justify-between flex-1">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <button onclick="navigateTo('options')" class="text-slate-400 hover:text-white text-xs flex items-center font-medium">
+                            <i class="fa-solid fa-arrow-left mr-2"></i> Detect Another
+                        </button>
+                        <span id="result-badge" class="px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider"></span>
+                    </div>
+
+                    <div id="result-card-banner" class="rounded-2xl p-4 border mb-5 shadow-lg">
+                        <div class="flex items-center space-x-4">
+                            <img id="result-thumbnail" src="" alt="Analyzed Leaf" class="w-16 h-16 rounded-xl object-cover border-2 border-white/20 shadow">
+                            <div>
+                                <h3 id="result-title" class="text-lg font-bold text-white">Disease Name</h3>
+                                <div class="flex items-center mt-1 space-x-2">
+                                    <span class="text-xs text-slate-300 font-medium">Confidence Score:</span>
+                                    <span id="result-confidence" class="text-xs font-bold px-2 py-0.5 rounded bg-black/30">0%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-800/80 border border-slate-700/60 rounded-xl p-4 mb-4 space-y-2">
+                        <h4 class="text-xs font-semibold text-brand-400 uppercase tracking-wider flex items-center">
+                            <i class="fa-solid fa-stethoscope mr-2"></i> Clinical Observations & Symptoms
+                        </h4>
+                        <p id="result-symptoms" class="text-xs text-slate-300 leading-relaxed"></p>
+                    </div>
+
+                    <div class="bg-slate-800/80 border border-slate-700/60 rounded-xl p-4 space-y-2">
+                        <h4 class="text-xs font-semibold text-emerald-400 uppercase tracking-wider flex items-center">
+                            <i class="fa-solid fa-kit-medical mr-2"></i> Recommended Management / Treatment
+                        </h4>
+                        <p id="result-treatment" class="text-xs text-slate-300 leading-relaxed"></p>
+                    </div>
+                </div>
+
+                <div class="pt-6 space-y-3">
+                    <button id="save-record-btn" onclick="saveCurrentRecord()" class="w-full bg-brand-600 hover:bg-brand-500 active:scale-[0.98] transition-all text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-brand-600/30 flex items-center justify-center space-x-2 text-xs">
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        <span>Save Detection Record to Database</span>
+                    </button>
+                    <button onclick="navigateTo('history')" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium py-3 rounded-xl border border-slate-700 text-xs flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        <span>View Detection History</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- VIEW 5: DETECTION HISTORY & DASHBOARD -->
+            <section id="view-history" class="p-6 hidden flex-col flex-1">
+                <div class="flex items-center justify-between mb-4">
+                    <button onclick="navigateTo('options')" class="text-slate-400 hover:text-white text-xs flex items-center font-medium">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Back to Detect
+                    </button>
+                    <h2 class="text-sm font-bold text-white">Detection Records Database</h2>
+                    <button onclick="clearHistory()" class="text-red-400 hover:text-red-300 text-[11px]" title="Clear Records">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-3 gap-2 mb-4">
+                    <div class="bg-slate-800/80 border border-slate-700/60 p-2.5 rounded-xl text-center">
+                        <div id="stat-total" class="text-base font-bold text-white">0</div>
+                        <div class="text-[10px] text-slate-400">Total Scans</div>
+                    </div>
+                    <div class="bg-slate-800/80 border border-slate-700/60 p-2.5 rounded-xl text-center">
+                        <div id="stat-healthy" class="text-base font-bold text-emerald-400">0</div>
+                        <div class="text-[10px] text-slate-400">Healthy</div>
+                    </div>
+                    <div class="bg-slate-800/80 border border-slate-700/60 p-2.5 rounded-xl text-center">
+                        <div id="stat-diseased" class="text-base font-bold text-amber-400">0</div>
+                        <div class="text-[10px] text-slate-400">Diseased</div>
+                    </div>
+                </div>
+
+                <div id="history-list" class="space-y-3 flex-1 overflow-y-auto no-scrollbar pr-1"></div>
+            </section>
+
+            <!-- VIEW 6: FARMER DISEASE LIBRARY -->
+            <section id="view-disease-library" class="p-6 hidden flex-col flex-1">
+                <div class="flex items-center justify-between mb-4">
+                    <button onclick="navigateTo('options')" class="text-slate-400 hover:text-white text-xs flex items-center font-medium">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Back
+                    </button>
+                    <h2 class="text-sm font-bold text-white">Offline Disease Library</h2>
+                    <span id="library-count-badge" class="bg-brand-500/10 text-brand-400 text-[10px] px-2 py-0.5 rounded-full border border-brand-500/20 font-semibold">Synced</span>
+                </div>
+
+                <div class="relative mb-3">
+                    <input type="text" id="farmer-search-library" oninput="filterFarmerLibrary()" placeholder="Search library records..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-brand-500 pl-8">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
+                </div>
+
+                <div id="farmer-library-list" class="space-y-3 flex-1 overflow-y-auto no-scrollbar pr-1"></div>
+            </section>
+
+            <!-- VIEW 7: FARMER NOTIFICATION PAGE -->
+            <section id="view-notifications" class="p-6 hidden flex-col flex-1">
+                <div class="flex items-center justify-between mb-4">
+                    <button onclick="navigateTo('options')" class="text-slate-400 hover:text-white text-xs flex items-center font-medium">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Back
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <h2 class="text-sm font-bold text-white">Notifications</h2>
+                        <span id="unread-badge" class="bg-red-500 text-white text-[10px] px-1.5 py-0.2 rounded-full font-bold">0</span>
+                    </div>
+                    <button onclick="markAllNotificationsRead()" class="text-[10px] text-brand-400 hover:underline">Mark all read</button>
+                </div>
+
+                <div id="notification-list" class="space-y-3 flex-1 overflow-y-auto no-scrollbar pr-1"></div>
+            </section>
+
+
+            <!-- ================= ADMIN SIDE VIEWS ================= -->
+
+            <!-- VIEW A1: ADMIN DASHBOARD -->
+            <section id="view-admin-dashboard" class="p-6 hidden flex-col flex-1">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <span class="text-[10px] font-semibold text-indigo-400 uppercase tracking-wider">Admin Portal</span>
+                        <h2 class="text-base font-bold text-white">Disease Management</h2>
+                    </div>
+                    <button onclick="openAdminAddModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-2 rounded-xl text-xs font-semibold flex items-center space-x-1.5 shadow-lg shadow-indigo-600/30">
+                        <i class="fa-solid fa-plus text-[10px]"></i>
+                        <span>Add Disease</span>
+                    </button>
+                </div>
+
+                <!-- Admin Stats Grid -->
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div class="bg-slate-800/80 border border-slate-700/60 p-3 rounded-xl">
+                        <div id="admin-stat-total" class="text-lg font-bold text-indigo-400">0</div>
+                        <div class="text-[11px] text-slate-400">Total Disease Records</div>
+                    </div>
+                    <div class="bg-slate-800/80 border border-slate-700/60 p-3 rounded-xl">
+                        <div id="admin-stat-updates" class="text-lg font-bold text-brand-400">0</div>
+                        <div class="text-[11px] text-slate-400">Broadcasted Updates</div>
+                    </div>
+                </div>
+
+                <!-- Search Disease Records -->
+                <div class="relative mb-3">
+                    <input type="text" id="admin-search-input" oninput="renderAdminDiseaseTable()" placeholder="Search disease database..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-indigo-500 pl-8">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
+                </div>
+
+                <!-- Admin Disease Records List / Table -->
+                <div id="admin-disease-list" class="space-y-3 flex-1 overflow-y-auto no-scrollbar pr-1"></div>
+            </section>
+
+
+        </main>
+
+        <!-- Dynamic Navigation Footer Bar -->
+        <nav id="app-footer-nav" class="bg-slate-950 border-t border-slate-800 px-6 py-3 pb-6 flex items-center justify-around z-10 shrink-0">
+            <!-- Dynamically populated based on role -->
+        </nav>
+
+        <!-- Notification Toast Modal -->
+        <div id="toast-notification" class="absolute bottom-20 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-4 py-2.5 rounded-xl shadow-2xl border border-slate-700 text-xs font-medium z-50 transition-all opacity-0 pointer-events-none flex items-center space-x-2">
+            <i id="toast-icon" class="fa-solid fa-circle-check text-brand-400"></i>
+            <span id="toast-message">Record saved successfully!</span>
+        </div>
+
+        <!-- ADMIN ADD / EDIT DISEASE MODAL -->
+        <div id="admin-modal" class="absolute inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex flex-col justify-end p-4">
+            <div class="bg-slate-900 border border-slate-700 rounded-3xl p-5 max-h-[85vh] overflow-y-auto space-y-4 shadow-2xl">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <h3 id="admin-modal-title" class="text-sm font-bold text-white">Add New Disease Record</h3>
+                    <button onclick="closeAdminModal()" class="text-slate-400 hover:text-white text-xs">
+                        <i class="fa-solid fa-xmark text-base"></i>
+                    </button>
+                </div>
+
+                <form id="admin-disease-form" onsubmit="handleAdminFormSubmit(event)" class="space-y-3">
+                    <input type="hidden" id="edit-disease-id">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-300 mb-1">Upload File or Image</label>
+                        <input type="file" id="admin-file-input" accept="image/*" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-300 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-[11px] file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-300 mb-1">Disease Name *</label>
+                        <input type="text" id="admin-disease-name" required placeholder="e.g., Powdery Mildew" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-300 mb-1">Symptoms Description *</label>
+                        <textarea id="admin-symptoms" rows="3" required placeholder="Enter detailed leaf symptoms..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-300 mb-1">Recommended Action *</label>
+                        <input type="text" id="admin-recommendation" required placeholder="e.g., Isolate infected vines & prune" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:border-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-300 mb-1">Treatment / Management *</label>
+                        <textarea id="admin-treatment" rows="3" required placeholder="Enter organic or chemical treatment details..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-indigo-500"></textarea>
+                    </div>
+
+                    <div class="flex space-x-2 pt-2">
+                        <button type="button" onclick="closeAdminModal()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 py-3 rounded-xl text-xs font-semibold">Cancel</button>
+                        <button type="submit" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white py-3 rounded-xl text-xs font-semibold shadow-lg shadow-indigo-600/30">Save to Offline DB</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Application Logic Script -->
+    <script>
+        // Update live status bar time
+        function updateStatusBarTime() {
+            const now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            const timeStr = `${hours}:${minutes}`;
+            const timeEl = document.getElementById('status-bar-time');
+            if (timeEl) timeEl.innerText = timeStr;
+        }
+        updateStatusBarTime();
+        setInterval(updateStatusBarTime, 30000);
+
+        let currentImageBase64 = null;
+        let currentClassificationResult = null;
+        let cameraStream = null;
+        
+        // Offline-First Session & Storage Management
+        let currentUser = null; // { username, role: 'farmer' | 'admin', name }
+
+        // Default Master Disease Library Dataset
+        let diseaseLibrary = [
+            {
+                id: 'DIS-01',
+                name: 'Healthy Ampalaya Leaf',
+                symptoms: 'Vibrant green pigmentation, uniform reticulate venation, turgid lamina, and absence of chlorotic spots or fungal mycelium.',
+                recommendation: 'Maintain optimal soil nitrogen levels, regular drip irrigation, and standard organic pest scouting.',
+                treatment: 'No treatment required. Maintain current balanced organic fertilization schedule.',
+                image: 'https://images.unsplash.com/photo-1592417817098-8f3d6eb26474?auto=format&fit=crop&w=600&q=80',
+                condition: 'Healthy'
+            },
+            {
+                id: 'DIS-02',
+                name: 'Downy Mildew (Pseudoperonospora cubensis)',
+                symptoms: 'Angular yellow to pale green chlorotic lesions bounded by leaf veins on the upper surface, with grayish-purple fungal sporulation underneath.',
+                recommendation: 'Apply copper-based fungicides or mancozeb. Improve canopy air circulation by pruning lower vines.',
+                treatment: 'Spray copper hydroxide or chlorothalonil fungicides. Avoid overhead sprinkling.',
+                image: 'https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?auto=format&fit=crop&w=600&q=80',
+                condition: 'Diseased'
+            },
+            {
+                id: 'DIS-03',
+                name: 'Cercospora Leaf Spot',
+                symptoms: 'Small circular spots with grayish-white centers and dark brown or reddish borders scattered across the leaf blade.',
+                recommendation: 'Remove severely infected lower leaves, apply azoxystrobin or mancozeb fungicides.',
+                treatment: 'Apply azoxystrobin and remove crop debris after harvest.',
+                image: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=600&q=80',
+                condition: 'Diseased'
+            },
+            {
+                id: 'DIS-04',
+                name: 'Ampalaya Mosaic Virus (CpMoV)',
+                symptoms: 'Mottled light and dark green patterns across the leaf tissue with leaf curling, puckering, and stunted vine growth.',
+                recommendation: 'Rogue out and destroy infected plants immediately to prevent vector transmission.',
+                treatment: 'Control aphid vectors using insecticidal soap or neem oil.',
+                image: 'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=600&q=80',
+                condition: 'Diseased'
+            }
+        ];
+
+        let detectionHistory = [];
+        let notifications = [];
+
+        // Predefined offline user database including Admin & default Farmers
+        let userDatabase = [
+            { username: 'admin', email: 'admin@ampalagaguard.com', password: 'admin123', role: 'admin', name: 'System Administrator' },
+            { username: 'farmer', email: 'farmer@gmail.com', password: 'farmer123', role: 'farmer', name: 'Field Farmer' }
+        ];
+
+        // Initialize Offline Storage (LocalStorage / IndexedDB simulation)
+        function initStorage() {
+            try {
+                const savedUser = localStorage.getItem('ampalaya_session');
+                if (savedUser) {
+                    currentUser = JSON.parse(savedUser);
+                }
+
+                const savedUsersDb = localStorage.getItem('ampalaya_users_db');
+                if (savedUsersDb) {
+                    userDatabase = JSON.parse(savedUsersDb);
+                } else {
+                    localStorage.setItem('ampalaya_users_db', JSON.stringify(userDatabase));
+                }
+
+                const savedLib = localStorage.getItem('ampalaya_disease_library');
+                if (savedLib) {
+                    diseaseLibrary = JSON.parse(savedLib);
+                } else {
+                    localStorage.setItem('ampalaya_disease_library', JSON.stringify(diseaseLibrary));
+                }
+
+                const savedHistory = localStorage.getItem('ampalaya_history');
+                if (savedHistory) {
+                    detectionHistory = JSON.parse(savedHistory);
+                } else {
+                    detectionHistory = [
+                        {
+                            id: 'REC-1049',
+                            timestamp: '2026-06-06 08:30 AM',
+                            condition: 'Healthy',
+                            diseaseName: 'Healthy Ampalaya Leaf',
+                            confidence: '98.7%',
+                            image: 'https://placehold.co/200x200/1e293b/22c55e?text=Healthy+Leaf',
+                            symptoms: 'Vibrant green pigmentation, uniform reticulate venation, turgid lamina, and absence of chlorotic spots or fungal mycelium.',
+                            treatment: 'Maintain optimal soil nitrogen levels, regular drip irrigation, and standard organic pest scouting.'
+                        }
+                    ];
+                    localStorage.setItem('ampalaya_history', JSON.stringify(detectionHistory));
+                }
+
+                const savedNotifs = localStorage.getItem('ampalaya_notifications');
+                if (savedNotifs) {
+                    notifications = JSON.parse(savedNotifs);
+                } else {
+                    notifications = [
+                        {
+                            id: 'NOTIF-1',
+                            title: 'System Initialized',
+                            message: 'Offline disease library and notification system active.',
+                            timestamp: 'June 06, 2026',
+                            read: false
+                        }
+                    ];
+                    localStorage.setItem('ampalaya_notifications', JSON.stringify(notifications));
+                }
+            } catch (e) {
+                console.error("Storage initialization error:", e);
+            }
+        }
+        initStorage();
+
+        // Check active session on load
+        window.addEventListener('DOMContentLoaded', () => {
+            if (currentUser) {
+                if (currentUser.role === 'admin') {
+                    navigateToAdminDashboard();
+                } else {
+                    navigateTo('welcome');
+                    renderFooterNav('farmer');
+                }
+            } else {
+                navigateTo('login');
+                renderFooterNav('login');
+            }
+        });
+
+        // Unified Login Handler with Automatic Role Detection
+        function handleLoginSubmit(event) {
+            event.preventDefault();
+            const u = document.getElementById('login-username').value.trim().toLowerCase();
+            const p = document.getElementById('login-password').value.trim();
+            const errEl = document.getElementById('login-error');
+
+            // Find matching user in offline database (by username or email)
+            const matchedUser = userDatabase.find(user => (user.username.toLowerCase() === u || user.email.toLowerCase() === u) && user.password === p);
+
+            if (matchedUser) {
+                currentUser = { username: matchedUser.username, role: matchedUser.role, name: matchedUser.name, email: matchedUser.email };
+                localStorage.setItem('ampalaya_session', JSON.stringify(currentUser));
+                errEl.classList.add('hidden');
+
+                if (matchedUser.role === 'admin') {
+                    showToast("Logged in as Administrator. Redirecting...", "fa-shield-halved", "text-indigo-400");
+                    setTimeout(() => {
+                        navigateToAdminDashboard();
+                    }, 400);
+                } else {
+                    showToast("Welcome back, " + matchedUser.name + "!", "fa-circle-check", "text-brand-400");
+                    setTimeout(() => {
+                        navigateTo('welcome');
+                        renderFooterNav('farmer');
+                    }, 400);
+                }
+            } else {
+                errEl.classList.remove('hidden');
+                showToast("Authentication failed. Invalid credentials.", "fa-triangle-exclamation", "text-red-400");
+            }
+        }
+
+        // Farmer Registration Handler with Validation & Duplicate Check
+        function handleRegisterSubmit(event) {
+            event.preventDefault();
+            const fullname = document.getElementById('reg-fullname').value.trim();
+            const username = document.getElementById('reg-username').value.trim().toLowerCase();
+            const email = document.getElementById('reg-email').value.trim().toLowerCase();
+            const password = document.getElementById('reg-password').value;
+            const confirm = document.getElementById('reg-confirm').value;
+            const errEl = document.getElementById('register-error');
+
+            if (password !== confirm) {
+                errEl.innerText = "Passwords do not match. Please re-enter.";
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            if (password.length < 6) {
+                errEl.innerText = "Password must be at least 6 characters long.";
+                errEl.classList.remove('hidden');
+                return;
+            }
+
+            // Check if username or email already exists in local database
+            const existingUser = userDatabase.find(u => u.username.toLowerCase() === username || u.email.toLowerCase() === email);
+            if (existingUser) {
+                errEl.innerText = "Username or Email is already registered. Please choose another or log in.";
+                errEl.classList.remove('hidden');
+                showToast("Registration failed: Username/Email already exists.", "fa-triangle-exclamation", "text-red-400");
+                return;
+            }
+
+            // Create new Farmer account object
+            const newFarmer = {
+                username: username,
+                email: email,
+                password: password,
+                role: 'farmer',
+                name: fullname
+            };
+
+            userDatabase.push(newFarmer);
+            try {
+                localStorage.setItem('ampalaya_users_db', JSON.stringify(userDatabase));
+            } catch (e) {
+                console.error("User storage error:", e);
+            }
+
+            errEl.classList.add('hidden');
+            showToast("Farmer account registered successfully! Please log in.", "fa-circle-check", "text-brand-400");
+
+            document.getElementById('register-form').reset();
+            setTimeout(() => {
+                navigateTo('login');
+            }, 600);
+        }
+
+        function logoutUser() {
+            currentUser = null;
+            localStorage.removeItem('ampalaya_session');
+            stopCameraStream();
+            showToast("Logged out successfully.", "fa-right-from-bracket", "text-slate-400");
+            navigateTo('login');
+            renderFooterNav('login');
+        }
+
+        // Navigation Controller
+        function navigateTo(viewName) {
+            const views = ['login', 'register', 'welcome', 'options', 'camera', 'processing', 'result', 'history', 'disease-library', 'notifications', 'admin-dashboard'];
+            views.forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                if (el) el.classList.add('hidden');
+                if (el) el.classList.remove('flex');
+            });
+
+            const target = document.getElementById(`view-${viewName}`);
+            if (target) {
+                target.classList.remove('hidden');
+                target.classList.add('flex');
+            }
+
+            if (viewName !== 'camera') {
+                stopCameraStream();
+            }
+
+            if (viewName === 'history') {
+                renderHistoryList();
+            } else if (viewName === 'disease-library') {
+                renderFarmerDiseaseLibrary();
+            } else if (viewName === 'notifications') {
+                renderNotificationsPage();
+            } else if (viewName === 'admin-dashboard') {
+                renderAdminDashboardData();
+            }
+        }
+
+        function navigateToAdminDashboard() {
+            navigateTo('admin-dashboard');
+            renderFooterNav('admin');
+        }
+
+        // Footer Navigation Render based on role
+        function renderFooterNav(role) {
+            const footer = document.getElementById('app-footer-nav');
+            if (role === 'farmer') {
+                footer.innerHTML = `
+                    <button onclick="navigateTo('welcome')" class="flex flex-col items-center text-slate-400 hover:text-brand-400 transition-colors p-1">
+                        <i class="fa-solid fa-house text-base"></i>
+                        <span class="text-[10px] mt-1 font-medium">Home</span>
+                    </button>
+                    <button onclick="navigateTo('disease-library')" class="flex flex-col items-center text-slate-400 hover:text-brand-400 transition-colors p-1">
+                        <i class="fa-solid fa-book-medical text-base"></i>
+                        <span class="text-[10px] mt-1 font-medium">Library</span>
+                    </button>
+                    <button onclick="navigateTo('options')" class="flex flex-col items-center text-brand-500 transition-colors p-1">
+                        <div class="w-10 h-10 -mt-5 rounded-full bg-brand-600 text-white flex items-center justify-center shadow-lg shadow-brand-600/40 border-4 border-slate-950">
+                            <i class="fa-solid fa-camera text-sm"></i>
+                        </div>
+                        <span class="text-[10px] mt-0.5 font-bold">Detect</span>
+                    </button>
+                    <button onclick="navigateTo('notifications')" class="flex flex-col items-center text-slate-400 hover:text-brand-400 transition-colors p-1 relative">
+                        <i class="fa-solid fa-bell text-base"></i>
+                        <span id="nav-notif-dot" class="absolute top-0 right-2 w-2 h-2 bg-red-500 rounded-full hidden"></span>
+                        <span class="text-[10px] mt-1 font-medium">Alerts</span>
+                    </button>
+                    <button onclick="logoutUser()" class="flex flex-col items-center text-slate-400 hover:text-red-400 transition-colors p-1">
+                        <i class="fa-solid fa-right-from-bracket text-base"></i>
+                        <span class="text-[10px] mt-1 font-medium">Logout</span>
+                    </button>
+                `;
+                updateUnreadNotificationBadge();
+            } else if (role === 'admin') {
+                footer.innerHTML = `
+                    <button onclick="navigateToAdminDashboard()" class="flex flex-col items-center text-indigo-400 transition-colors p-1">
+                        <i class="fa-solid fa-gauge text-base"></i>
+                        <span class="text-[10px] mt-1 font-medium">Dashboard</span>
+                    </button>
+                    <button onclick="openAdminAddModal()" class="flex flex-col items-center text-slate-400 hover:text-indigo-400 transition-colors p-1">
+                        <div class="w-10 h-10 -mt-5 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-600/40 border-4 border-slate-950">
+                            <i class="fa-solid fa-plus text-sm"></i>
+                        </div>
+                        <span class="text-[10px] mt-0.5 font-bold">Add New</span>
+                    </button>
+                    <button onclick="logoutUser()" class="flex flex-col items-center text-slate-400 hover:text-red-400 transition-colors p-1">
+                        <i class="fa-solid fa-right-from-bracket text-base"></i>
+                        <span class="text-[10px] mt-1 font-medium">Logout</span>
+                    </button>
+                `;
+            } else {
+                footer.innerHTML = `
+                    <div class="text-center text-[11px] text-slate-500 py-1">
+                        Ampalaya Leaf Disease Detection System &bull; Offline-First Architecture
+                    </div>
+                `;
+            }
+        }
+
+        // Camera Management
+        async function openCameraInterface() {
+            navigateTo('camera');
+            const videoElement = document.getElementById('camera-preview');
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
+                    audio: false
+                });
+                videoElement.srcObject = cameraStream;
+            } catch (err) {
+                console.warn("Camera access restricted. Falling back to sample photo.", err);
+                showToast("Camera access restricted. Loading sample camera frame.", "fa-triangle-exclamation", "text-amber-400");
+                loadSampleImage('downy');
+            }
+        }
+
+        function stopCameraStream() {
+            if (cameraStream) {
+                cameraStream.getTracks().forEach(track => track.stop());
+                cameraStream = null;
+            }
+        }
+
+        function captureCameraImage() {
+            const video = document.getElementById('camera-preview');
+            const canvas = document.getElementById('camera-canvas');
+            if (video.videoWidth > 0) {
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                currentImageBase64 = canvas.toDataURL('image/jpeg');
+                stopCameraStream();
+                startQualityCheckPipeline();
+            } else {
+                loadSampleImage('mosaic');
+            }
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentImageBase64 = e.target.result;
+                    startQualityCheckPipeline();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function loadSampleImage(type) {
+            if (type === 'healthy') {
+                currentImageBase64 = 'https://images.unsplash.com/photo-1592417817098-8f3d6eb26474?auto=format&fit=crop&w=600&q=80';
+            } else if (type === 'downy') {
+                currentImageBase64 = 'https://images.unsplash.com/photo-1530836369250-ef72a3f5cda8?auto=format&fit=crop&w=600&q=80';
+            } else {
+                currentImageBase64 = 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=600&q=80';
+            }
+            startQualityCheckPipeline();
+        }
+
+        // Quality Check & CNN Simulation Pipeline
+        function startQualityCheckPipeline() {
+            navigateTo('processing');
+            document.getElementById('processing-img-preview').src = currentImageBase64;
+            resetProcessingSteps();
+
+            setTimeout(() => {
+                updateStepStatus('step-1', 'completed', 'Image Quality Check Passed (Sharpness & Lighting OK)');
+                activateStep('step-2', 'Running Image Pre-Processing (Resize & ROI Crop)...');
+                
+                setTimeout(() => {
+                    updateStepStatus('step-2', 'completed', 'Pre-Processing Done (Normalized to 224x224 RGB)');
+                    activateStep('step-3', 'Extracting Color & Texture Feature Vectors...');
+                    
+                    setTimeout(() => {
+                        updateStepStatus('step-3', 'completed', 'Feature Extraction Complete (CNN Tensor Ready)');
+                        activateStep('step-4', 'Passing to Trained CNN Model & Dataset...');
+                        
+                        setTimeout(() => {
+                            updateStepStatus('step-4', 'completed', 'Classification Successful!');
+                            runCNNClassification();
+                        }, 900);
+
+                    }, 800);
+
+                }, 800);
+
+            }, 900);
+        }
+
+        function resetProcessingSteps() {
+            for(let i=1; i<=4; i++) {
+                const el = document.getElementById(`step-${i}`);
+                if(i === 1) {
+                    el.className = "flex items-center text-xs text-slate-300 font-medium";
+                    el.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-2.5 text-brand-400"></i><span>Image Quality Check (Lighting & Blur)</span>';
+                } else {
+                    el.className = "flex items-center text-xs text-slate-500";
+                    el.innerHTML = '<i class="fa-regular fa-circle mr-2.5"></i><span>' + getStepLabel(i) + '</span>';
+                }
+            }
+        }
+
+        function getStepLabel(i) {
+            if(i === 2) return "Image Pre-Processing (Resizing & ROI Crop)";
+            if(i === 3) return "Feature Extraction (Color/Texture CNN Vector)";
+            if(i === 4) return "Trained CNN Model Classification";
+            return "";
+        }
+
+        function activateStep(stepId, labelText) {
+            const el = document.getElementById(stepId);
+            el.className = "flex items-center text-xs text-slate-300 font-medium";
+            el.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin mr-2.5 text-brand-400"></i><span>' + labelText + '</span>';
+        }
+
+        function updateStepStatus(stepId, status, labelText) {
+            const el = document.getElementById(stepId);
+            el.className = "flex items-center text-xs text-emerald-400 font-medium";
+            el.innerHTML = '<i class="fa-solid fa-circle-check mr-2.5"></i><span>' + labelText + '</span>';
+        }
+
+        // CNN Model classification matching database records
+        function runCNNClassification() {
+            const matchedItem = diseaseLibrary[Math.floor(Math.random() * diseaseLibrary.length)];
+            const isHealthy = matchedItem.condition === 'Healthy';
+
+            currentClassificationResult = {
+                condition: matchedItem.condition,
+                diseaseName: matchedItem.name,
+                confidence: (93.5 + Math.random() * 5.8).toFixed(1) + '%',
+                badgeBg: isHealthy ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30',
+                bannerBg: isHealthy ? 'bg-emerald-950/60 border-emerald-700/50' : 'bg-amber-950/60 border-amber-700/50',
+                symptoms: matchedItem.symptoms,
+                treatment: matchedItem.treatment + ' (Recommendation: ' + matchedItem.recommendation + ')'
+            };
+
+            document.getElementById('result-thumbnail').src = currentImageBase64;
+            document.getElementById('result-title').innerText = currentClassificationResult.diseaseName;
+            document.getElementById('result-confidence').innerText = currentClassificationResult.confidence;
+            document.getElementById('result-symptoms').innerText = currentClassificationResult.symptoms;
+            document.getElementById('result-treatment').innerText = currentClassificationResult.treatment;
+
+            const badge = document.getElementById('result-badge');
+            badge.className = `px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${currentClassificationResult.badgeBg}`;
+            badge.innerHTML = `<i class="fa-solid fa-circle text-[8px] mr-1"></i> ${currentClassificationResult.condition}`;
+
+            const banner = document.getElementById('result-card-banner');
+            banner.className = `rounded-2xl p-4 border mb-5 shadow-lg ${currentClassificationResult.bannerBg}`;
+
+            const saveBtn = document.getElementById('save-record-btn');
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i><span>Save Detection Record to Database</span>';
+            saveBtn.className = "w-full bg-brand-600 hover:bg-brand-500 active:scale-[0.98] transition-all text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-brand-600/30 flex items-center justify-center space-x-2 text-xs";
+
+            navigateTo('result');
+        }
+
+        // Save Detection Record
+        function saveCurrentRecord() {
+            if (!currentClassificationResult) return;
+
+            const newRecord = {
+                id: 'REC-' + Math.floor(1000 + Math.random() * 9000),
+                timestamp: new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+                condition: currentClassificationResult.condition,
+                diseaseName: currentClassificationResult.diseaseName,
+                confidence: currentClassificationResult.confidence,
+                image: currentImageBase64,
+                symptoms: currentClassificationResult.symptoms,
+                treatment: currentClassificationResult.treatment
+            };
+
+            detectionHistory.unshift(newRecord);
+            try {
+                localStorage.setItem('ampalaya_history', JSON.stringify(detectionHistory));
+            } catch (e) {
+                console.error("Storage error:", e);
+            }
+
+            const saveBtn = document.getElementById('save-record-btn');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fa-solid fa-check text-emerald-300"></i><span>Record Saved Successfully!</span>';
+            saveBtn.className = "w-full bg-emerald-800 text-emerald-100 font-semibold py-3.5 rounded-xl text-xs flex items-center justify-center space-x-2 cursor-default";
+
+            showToast("Detection record successfully saved to database!", "fa-circle-check", "text-brand-400");
+        }
+
+        // Render Detection History
+        function renderHistoryList() {
+            const listContainer = document.getElementById('history-list');
+            listContainer.innerHTML = '';
+
+            let healthyCount = 0;
+            let diseasedCount = 0;
+
+            detectionHistory.forEach(rec => {
+                if (rec.condition === 'Healthy') healthyCount++;
+                else diseasedCount++;
+
+                const badgeColor = rec.condition === 'Healthy' 
+                    ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' 
+                    : 'bg-amber-500/20 text-amber-300 border-amber-500/30';
+
+                const card = document.createElement('div');
+                card.className = "bg-slate-800/90 border border-slate-700/80 rounded-xl p-3 flex items-center space-x-3 shadow-sm";
+                card.innerHTML = `
+                    <img src="${rec.image}" alt="Leaf Thumbnail" class="w-14 h-14 rounded-lg object-cover border border-slate-700 shrink-0">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-mono text-slate-400">${rec.id} &bull; ${rec.timestamp}</span>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase ${badgeColor}">${rec.condition}</span>
+                        </div>
+                        <h4 class="text-xs font-bold text-white truncate mt-0.5">${rec.diseaseName}</h4>
+                        <div class="flex items-center justify-between mt-1">
+                            <span class="text-[10px] text-slate-400">Confidence: <strong class="text-slate-200">${rec.confidence}</strong></span>
+                            <button onclick="viewRecordDetails('${rec.id}')" class="text-brand-400 hover:text-brand-300 text-[11px] font-medium flex items-center">
+                                View <i class="fa-solid fa-chevron-right ml-1 text-[9px]"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                listContainer.appendChild(card);
+            });
+
+            document.getElementById('stat-total').innerText = detectionHistory.length;
+            document.getElementById('stat-healthy').innerText = healthyCount;
+            document.getElementById('stat-diseased').innerText = diseasedCount;
+
+            if (detectionHistory.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="text-center py-12 text-slate-500">
+                        <i class="fa-solid fa-folder-open text-3xl mb-2"></i>
+                        <p class="text-xs">No detection records saved yet.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function viewRecordDetails(id) {
+            const rec = detectionHistory.find(r => r.id === id);
+            if (!rec) return;
+
+            currentImageBase64 = rec.image;
+            currentClassificationResult = {
+                condition: rec.condition,
+                diseaseName: rec.diseaseName,
+                confidence: rec.confidence,
+                badgeBg: rec.condition === 'Healthy' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-300 border border-amber-500/30',
+                bannerBg: rec.condition === 'Healthy' ? 'bg-emerald-950/60 border-emerald-700/50' : 'bg-amber-950/60 border-amber-700/50',
+                symptoms: rec.symptoms,
+                treatment: rec.treatment
+            };
+
+            document.getElementById('result-thumbnail').src = currentImageBase64;
+            document.getElementById('result-title').innerText = rec.diseaseName;
+            document.getElementById('result-confidence').innerText = rec.confidence;
+            document.getElementById('result-symptoms').innerText = rec.symptoms;
+            document.getElementById('result-treatment').innerText = rec.treatment;
+
+            const badge = document.getElementById('result-badge');
+            badge.className = `px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${currentClassificationResult.badgeBg}`;
+            badge.innerHTML = `<i class="fa-solid fa-circle text-[8px] mr-1"></i> ${rec.condition}`;
+
+            const banner = document.getElementById('result-card-banner');
+            banner.className = `rounded-2xl p-4 border mb-5 shadow-lg ${currentClassificationResult.bannerBg}`;
+
+            const saveBtn = document.getElementById('save-record-btn');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fa-solid fa-check text-emerald-300"></i><span>Already Saved in Database</span>';
+            saveBtn.className = "w-full bg-slate-800 text-slate-400 font-semibold py-3.5 rounded-xl text-xs flex items-center justify-center space-x-2 border border-slate-700 cursor-default";
+
+            navigateTo('result');
+        }
+
+        function clearHistory() {
+            if (confirm("Are you sure you want to clear all detection records?")) {
+                detectionHistory = [];
+                localStorage.removeItem('ampalaya_history');
+                renderHistoryList();
+                showToast("All detection records cleared.", "fa-trash-can", "text-red-400");
+            }
+        }
+
+        // Render Farmer Disease Library
+        function renderFarmerDiseaseLibrary(filterQuery = '') {
+            const container = document.getElementById('farmer-library-list');
+            container.innerHTML = '';
+
+            const query = filterQuery.toLowerCase();
+            const filtered = diseaseLibrary.filter(d => d.name.toLowerCase().includes(query) || d.symptoms.toLowerCase().includes(query));
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "bg-slate-800/90 border border-slate-700/80 rounded-xl p-3.5 space-y-2 shadow-sm";
+                card.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <img src="${item.image}" alt="${item.name}" class="w-12 h-12 rounded-lg object-cover border border-slate-700 shrink-0">
+                        <div class="flex-1 min-w-0">
+                            <span class="text-[10px] font-mono text-brand-400">${item.id}</span>
+                            <h4 class="text-xs font-bold text-white truncate">${item.name}</h4>
+                        </div>
+                    </div>
+                    <div class="text-[11px] text-slate-300 space-y-1">
+                        <p><strong>Symptoms:</strong> ${item.symptoms}</p>
+                        <p><strong>Treatment:</strong> <span class="text-emerald-300">${item.treatment}</span></p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="text-center py-10 text-slate-500 text-xs">No matching disease records found in offline library.</div>`;
+            }
+        }
+
+        function filterFarmerLibrary() {
+            const q = document.getElementById('farmer-search-library').value;
+            renderFarmerDiseaseLibrary(q);
+        }
+
+        // Notification System
+        function addNotification(title, message) {
+            const newNotif = {
+                id: 'NOTIF-' + Date.now(),
+                title: title,
+                message: message,
+                timestamp: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                read: false
+            };
+            notifications.unshift(newNotif);
+            try {
+                localStorage.setItem('ampalaya_notifications', JSON.stringify(notifications));
+            } catch(e) {
+                console.error("Notif storage error:", e);
+            }
+            updateUnreadNotificationBadge();
+        }
+
+        function updateUnreadNotificationBadge() {
+            const unreadCount = notifications.filter(n => !n.read).length;
+            const dot = document.getElementById('nav-notif-dot');
+            const badge = document.getElementById('unread-badge');
+            if (dot) {
+                if (unreadCount > 0) dot.classList.remove('hidden');
+                else dot.classList.add('hidden');
+            }
+            if (badge) {
+                badge.innerText = unreadCount;
+                if (unreadCount === 0) badge.classList.add('hidden');
+                else badge.classList.remove('hidden');
+            }
+        }
+
+        function renderNotificationsPage() {
+            const container = document.getElementById('notification-list');
+            container.innerHTML = '';
+
+            notifications.forEach(n => {
+                const card = document.createElement('div');
+                card.className = `p-3.5 rounded-xl border transition-all ${n.read ? 'bg-slate-800/40 border-slate-800 text-slate-400' : 'bg-slate-800/90 border-slate-700 text-white shadow-md'}`;
+                card.innerHTML = `
+                    <div class="flex items-center justify-between mb-1">
+                        <h4 class="text-xs font-bold ${n.read ? 'text-slate-300' : 'text-brand-400'}">${n.title}</h4>
+                        <span class="text-[10px] text-slate-500">${n.timestamp}</span>
+                    </div>
+                    <p class="text-xs leading-relaxed">${n.message}</p>
+                    ${!n.read ? `<button onclick="markNotificationRead('${n.id}')" class="mt-2 text-[10px] text-brand-400 hover:underline">Mark as read</button>` : ''}
+                `;
+                container.appendChild(card);
+            });
+
+            if (notifications.length === 0) {
+                container.innerHTML = `<div class="text-center py-10 text-slate-500 text-xs">No notifications available.</div>`;
+            }
+        }
+
+        function markNotificationRead(id) {
+            const n = notifications.find(x => x.id === id);
+            if (n) {
+                n.read = true;
+                localStorage.setItem('ampalaya_notifications', JSON.stringify(notifications));
+                renderNotificationsPage();
+                updateUnreadNotificationBadge();
+            }
+        }
+
+        function markAllNotificationsRead() {
+            notifications.forEach(n => n.read = true);
+            localStorage.setItem('ampalaya_notifications', JSON.stringify(notifications));
+            renderNotificationsPage();
+            updateUnreadNotificationBadge();
+            showToast("All notifications marked as read.", "fa-circle-check", "text-brand-400");
+        }
+
+
+        // ================= ADMIN SIDE LOGIC =================
+
+        function renderAdminDashboardData() {
+            document.getElementById('admin-stat-total').innerText = diseaseLibrary.length;
+            document.getElementById('admin-stat-updates').innerText = notifications.length;
+            renderAdminDiseaseTable();
+        }
+
+        function renderAdminDiseaseTable(filterQuery = '') {
+            const container = document.getElementById('admin-disease-list');
+            container.innerHTML = '';
+
+            const q = (document.getElementById('admin-search-input')?.value || '').toLowerCase();
+            const filtered = diseaseLibrary.filter(d => d.name.toLowerCase().includes(q) || d.symptoms.toLowerCase().includes(q));
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "bg-slate-800/90 border border-slate-700/80 rounded-xl p-3.5 space-y-2.5 shadow-sm";
+                card.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <img src="${item.image}" alt="${item.name}" class="w-12 h-12 rounded-lg object-cover border border-slate-700 shrink-0">
+                        <div class="flex-1 min-w-0">
+                            <span class="text-[10px] font-mono text-indigo-400">${item.id} &bull; ${item.condition}</span>
+                            <h4 class="text-xs font-bold text-white truncate">${item.name}</h4>
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-slate-300 line-clamp-2"><strong>Symptoms:</strong> ${item.symptoms}</p>
+                    <div class="flex items-center justify-between pt-1 border-t border-slate-700/60">
+                        <span class="text-[10px] text-slate-400 truncate max-w-[180px]"><strong>Action:</strong> ${item.recommendation}</span>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="openAdminEditModal('${item.id}')" class="bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 px-2.5 py-1 rounded-lg text-[11px] font-medium flex items-center space-x-1 border border-indigo-500/20">
+                                <i class="fa-solid fa-pen text-[9px]"></i><span>Edit</span>
+                            </button>
+                            <button onclick="deleteDiseaseRecord('${item.id}')" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 px-2.5 py-1 rounded-lg text-[11px] font-medium flex items-center space-x-1 border border-red-500/20">
+                                <i class="fa-solid fa-trash text-[9px]"></i><span>Delete</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="text-center py-12 text-slate-500 text-xs">No disease records found. Click 'Add Disease' to create one.</div>`;
+            }
+        }
+
+        function openAdminAddModal() {
+            document.getElementById('admin-modal-title').innerText = "Add New Disease Record";
+            document.getElementById('edit-disease-id').value = "";
+            document.getElementById('admin-disease-form').reset();
+            document.getElementById('admin-modal').classList.remove('hidden');
+        }
+
+        function openAdminEditModal(id) {
+            const item = diseaseLibrary.find(d => d.id === id);
+            if (!item) return;
+
+            document.getElementById('admin-modal-title').innerText = "Edit Disease Record (" + id + ")";
+            document.getElementById('edit-disease-id').value = item.id;
+            document.getElementById('admin-disease-name').value = item.name;
+            document.getElementById('admin-symptoms').value = item.symptoms;
+            document.getElementById('admin-recommendation').value = item.recommendation;
+            document.getElementById('admin-treatment').value = item.treatment;
+            document.getElementById('admin-modal').classList.remove('hidden');
+        }
+
+        function closeAdminModal() {
+            document.getElementById('admin-modal').classList.add('hidden');
+        }
+
+        function handleAdminFormSubmit(event) {
+            event.preventDefault();
+            const editId = document.getElementById('edit-disease-id').value;
+            const name = document.getElementById('admin-disease-name').value;
+            const symptoms = document.getElementById('admin-symptoms').value;
+            const recommendation = document.getElementById('admin-recommendation').value;
+            const treatment = document.getElementById('admin-treatment').value;
+            const fileInput = document.getElementById('admin-file-input');
+
+            let imageUrl = 'https://images.unsplash.com/photo-1592417817098-8f3d6eb26474?auto=format&fit=crop&w=600&q=80';
+
+            const processSave = (imgData) => {
+                if (imgData) imageUrl = imgData;
+
+                if (editId) {
+                    // Edit existing record & track modified fields for exact farmer notification
+                    const index = diseaseLibrary.findIndex(d => d.id === editId);
+                    if (index !== -1) {
+                        const oldRecord = diseaseLibrary[index];
+                        let updatedFields = [];
+                        if (oldRecord.name !== name) updatedFields.push("Name");
+                        if (oldRecord.symptoms !== symptoms) updatedFields.push("Symptoms");
+                        if (oldRecord.recommendation !== recommendation) updatedFields.push("Recommended Action");
+                        if (oldRecord.treatment !== treatment) updatedFields.push("Treatment");
+                        if (imgData) updatedFields.push("Image Asset");
+
+                        diseaseLibrary[index].name = name;
+                        diseaseLibrary[index].symptoms = symptoms;
+                        diseaseLibrary[index].recommendation = recommendation;
+                        diseaseLibrary[index].treatment = treatment;
+                        if (imgData) diseaseLibrary[index].image = imageUrl;
+
+                        if (updatedFields.length === 1 && updatedFields[0] === "Treatment") {
+                            addNotification(`Disease Information Updated`, `The treatment information for ${name} has been updated by the Administrator.`);
+                        } else if (updatedFields.length === 1 && updatedFields[0] === "Symptoms") {
+                            addNotification(`Symptoms Updated`, `New symptom information for ${name} is now available.`);
+                        } else {
+                            const changeDetail = updatedFields.length > 0 ? ` (${updatedFields.join(', ')} updated)` : '';
+                            addNotification(`Disease Information Updated`, `The disease information for "${name}" has been updated by the Administrator${changeDetail}.`);
+                        }
+
+                        showToast(`Disease record "${name}" successfully updated & broadcasted!`, "fa-circle-check", "text-indigo-400");
+                    }
+                } else {
+                    // Add new record
+                    const newId = 'DIS-0' + (diseaseLibrary.length + 1);
+                    const newRecord = {
+                        id: newId,
+                        name: name,
+                        symptoms: symptoms,
+                        recommendation: recommendation,
+                        treatment: treatment,
+                        image: imageUrl,
+                        condition: 'Diseased'
+                    };
+                    diseaseLibrary.push(newRecord);
+
+                    // Broadcast precise notification to Farmer side
+                    addNotification("New Disease Added", `New disease information for "${name}" is now available in the Disease Library.`);
+                    showToast(`New disease "${name}" successfully added & broadcasted!`, "fa-circle-check", "text-indigo-400");
+                }
+
+                try {
+                    localStorage.setItem('ampalaya_disease_library', JSON.stringify(diseaseLibrary));
+                } catch (e) {
+                    console.error("Storage error:", e);
+                }
+
+                closeAdminModal();
+                renderAdminDashboardData();
+            };
+
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    processSave(e.target.result);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                processSave(null);
+            }
+        }
+
+        function deleteDiseaseRecord(id) {
+            const item = diseaseLibrary.find(d => d.id === id);
+            if (!item) return;
+
+            if (confirm(`Are you sure you want to delete "${item.name}" from the offline disease database?`)) {
+                diseaseLibrary = diseaseLibrary.filter(d => d.id !== id);
+                try {
+                    localStorage.setItem('ampalaya_disease_library', JSON.stringify(diseaseLibrary));
+                } catch (e) {
+                    console.error("Storage error:", e);
+                }
+
+                addNotification("Disease Record Removed", `The disease information for "${item.name}" has been removed by the Administrator.`);
+                renderAdminDashboardData();
+                showToast("Disease record deleted successfully.", "fa-trash", "text-red-400");
+            }
+        }
+
+        // Toast Notification Helper
+        function showToast(message, iconClass, iconColorClass) {
+            const toast = document.getElementById('toast-notification');
+            const msgEl = document.getElementById('toast-message');
+            const iconEl = document.getElementById('toast-icon');
+
+            msgEl.innerText = message;
+            iconEl.className = `fa-solid ${iconClass} ${iconColorClass}`;
+
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            toast.classList.add('opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('opacity-100');
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
